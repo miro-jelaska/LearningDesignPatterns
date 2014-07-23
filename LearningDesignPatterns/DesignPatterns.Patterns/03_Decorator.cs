@@ -7,20 +7,20 @@ namespace DesignPatterns.Patterns.Decorator
     {
         public void Print()
         {
-            if(this.CurrentText == null)
+            if(this.Content == null)
             {
-                Console.WriteLine(" - Text: null => Nothing to print - ");
+                Console.WriteLine(">> Text: null => Nothing to print");
             }
-            else if(this.CurrentText.Trim() == string.Empty)
+            else if(this.Content.Trim() == string.Empty)
             {
-                Console.WriteLine(" - Text: empty or whitespace => Nothing to print - ");
+                Console.WriteLine(">> Text: empty or whitespace => Nothing to print");
             }
             else
             {
-                Console.WriteLine(this.CurrentText);
+                Console.WriteLine(this.Content);
             }
         }
-        public string CurrentText { get; protected set; }
+        public string Content { get; protected set; }
     }
 
     class TextReader : Text
@@ -30,7 +30,7 @@ namespace DesignPatterns.Patterns.Decorator
             Console.WriteLine("Enter some text");
 
             var text = Console.ReadLine();
-            this.CurrentText = text;
+            this.Content = text;
         }
     }
 
@@ -38,18 +38,22 @@ namespace DesignPatterns.Patterns.Decorator
     {
         public ReverseTextDecorator(Text text)
         {
-            this.CurrentText =string.Join("", text.CurrentText.Reverse());
+            if(text != null)
+            {
+                this.Content = string.Join("", text.Content.Reverse());
+            }
         }
     }
     class ToUpperCaseDecorator : Text
     {
         public ToUpperCaseDecorator(Text text)
         {
-            this.CurrentText = text.CurrentText.ToUpper();
+            if(text != null)
+            {
+                this.Content = text.Content.ToUpper();
+            }
         }
     }
-
-    
 }
 namespace DesignPatterns.Patterns.Decorator
 {
