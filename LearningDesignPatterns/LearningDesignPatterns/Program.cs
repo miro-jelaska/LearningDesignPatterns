@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            Patterns.Observer.Executor.Execute();
+            Patterns.Decorator.Executor.Execute();
 
             System.Threading.Thread.Sleep(15000);
         }

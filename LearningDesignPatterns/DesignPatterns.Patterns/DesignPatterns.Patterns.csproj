@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="01_Strategy.cs" />
+    <Compile Include="03_Decorator.cs" />
     <Compile Include="02_Observer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
