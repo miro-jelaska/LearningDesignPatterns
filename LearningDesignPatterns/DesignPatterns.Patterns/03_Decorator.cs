@@ -1,57 +1,65 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace DesignPatterns.Patterns.Decorator
 {
-    abstract class Text
+    interface ITextReader
     {
-        public void Print()
-        {
-            if(this.Content == null)
-            {
-                Console.WriteLine(">> Text: null => Nothing to print");
-            }
-            else if(this.Content.Trim() == string.Empty)
-            {
-                Console.WriteLine(">> Text: empty or whitespace => Nothing to print");
-            }
-            else
-            {
-                Console.WriteLine(this.Content);
-            }
-        }
-        public string Content { get; protected set; }
+        string Read();
     }
 
-    class TextReader : Text
+    class ConsoleTextReader : ITextReader
     {
-        public void ReadText()
+        public string Read()
         {
             Console.WriteLine("Enter some text");
 
-            var text = Console.ReadLine();
-            this.Content = text;
+            return Console.ReadLine();
+        }
+    }
+    class DummyTextReader : ITextReader
+    {
+        public string Read()
+        {
+            return "Just use a goto statement.";
         }
     }
 
-    class ReverseTextDecorator : Text
+    class ReverseTextDecorator : ITextReader
     {
-        public ReverseTextDecorator(Text text)
+        public ReverseTextDecorator(ITextReader textReader)
         {
-            if(text != null)
-            {
-                this.Content = string.Join("", text.Content.Reverse());
-            }
+            Contract.Requires(textReader != null);
+
+            _textReader = textReader;
+        }
+
+        private readonly ITextReader _textReader;
+
+
+        public string Read()
+        {
+            var text = _textReader.Read();
+            return string.Join("", text.Reverse());
         }
     }
-    class ToUpperCaseDecorator : Text
+    class ToUpperCaseDecorator : ITextReader
     {
-        public ToUpperCaseDecorator(Text text)
+        public ToUpperCaseDecorator(ITextReader textReader)
         {
-            if(text != null)
-            {
-                this.Content = text.Content.ToUpper();
-            }
+            Contract.Requires(textReader != null);
+
+            _textReader = textReader;
+        }
+
+        private readonly ITextReader _textReader;
+
+
+        public string Read()
+        {
+            var text = _textReader.Read();
+            return text.ToUpper();
         }
     }
 }
@@ -61,17 +69,16 @@ namespace DesignPatterns.Patterns.Decorator
     {
         public static void Execute()
         {
-            var textReader = new TextReader();
-            textReader.Print();
-            textReader.ReadText();
+            var textReader = new DummyTextReader();
+            Console.WriteLine(textReader.Read());
 
-            var text = (Text) textReader;
+            var text = (ITextReader) textReader;
             text = new ReverseTextDecorator(text);
-            text.Print();
+            Console.WriteLine(text.Read());
             text = new ToUpperCaseDecorator(text);
-            text.Print();
+            Console.WriteLine(text.Read());
             text = new ReverseTextDecorator(text);
-            text.Print();
+            Console.WriteLine(text.Read());
         }
     }
 }
