@@ -91,7 +91,7 @@ namespace DesignPatterns.Patterns.FactoryMethod.Entities
 
         public int          Id              { get; private set; }
         public DressCode    DressCode       { get; private set; }
-        public bool         IsInFunction    { get; set;}
+        public bool         IsInFunction    { get; private set;}
 
         public abstract void DoTheJob();
     }
@@ -102,8 +102,6 @@ namespace DesignPatterns.Patterns.FactoryMethod.Entities
 
         public override void DoTheJob()
         {
-            Contract.Requires(this.IsInFunction);
-
             Console.WriteLine("Drone {0} is scouting on {1}.", this.Id, _MissionLocationProvider.GetLocationName_byDressCode(this.DressCode));
         }
 
@@ -119,14 +117,30 @@ namespace DesignPatterns.Patterns.FactoryMethod.Entities
 
         public override void DoTheJob()
         {
-            Contract.Requires(this.IsInFunction);
-
             Console.WriteLine("Drone {0} is repairing on {1}.", this.Id, _MissionLocationProvider.GetLocationName_byDressCode(this.DressCode));
         }
 
         public override Purpose Purpose
         {
             get { return Purpose.Repair; }
+        }
+    }
+    class DeactivatedDrone : Drone
+    {
+        public DeactivatedDrone(Drone activeDrone) : base(activeDrone.Id, activeDrone.DressCode)
+        {
+            this._purpose = activeDrone.Purpose;
+        }
+        private Purpose _purpose { get; set; }
+
+        public override Purpose Purpose
+        {
+            get { return this._purpose; }
+        }
+
+        public override void DoTheJob()
+        {
+            Console.WriteLine("Drone {0} is terminated and therefore unoperable.", this.Id);
         }
     }
 }
@@ -147,10 +161,10 @@ namespace DesignPatterns.Patterns.FactoryMethod
 
         public abstract Drone Create(Purpose purpose);
         
-        public void Terminate(Drone drone)
+        public Drone Terminate(Drone drone)
         {
-            drone.IsInFunction = false;
             Console.WriteLine("Drone {0} terminated.", drone.Id);
+            return new DeactivatedDrone(drone);
         }
     }
 
@@ -193,8 +207,8 @@ namespace DesignPatterns.Patterns.FactoryMethod
 
             marsScout.DoTheJob();
             marsRepair.DoTheJob();
-            marsDroneCreator.Terminate(marsScout);
-            moonRepairer.DoTheJob();
+            marsScout = marsDroneCreator.Terminate(marsScout);
+            marsScout.DoTheJob();
         }
     }
 }
