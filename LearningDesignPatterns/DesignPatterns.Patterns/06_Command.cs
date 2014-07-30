@@ -5,35 +5,40 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text.RegularExpressions;
 
+using DesignPatterns.Patterns.Command.Entities;
+
 namespace DesignPatterns.Patterns.Command.Entities
 {
-    interface IRemoteCode
+    public interface IDevice
     {
-        Code Code { get; }
+        Code RemoteCode { get; }
     }
     public class Code
     {
         public Code(string code)
         {
             Contract.Requires(Regex.IsMatch(code, @"^\d{4}$"));
+            this.Value = code;
         }
         public string Value { get; private set; }
+
+        public static Code FactoryDefault { get { return new Code("0000"); } }
     }
 
-    public class Tv : IRemoteCode
+    public class Tv : IDevice
     {
         public Tv
         (
-            Code code
+            Code remoteCode
         )
         {
-            Contract.Requires(code != null);
+            Contract.Requires(remoteCode != null);
 
-            this.Code    = code;
+            this.RemoteCode    = remoteCode;
             this.Channel = 0;
             _isTurnedOn  = false;
         }
-        public  Code Code        { get; private set; }
+        public  Code RemoteCode        { get; private set; }
         public  int  Channel     { get; private set; }
         private bool _isTurnedOn { get; set; }
 
@@ -54,26 +59,26 @@ namespace DesignPatterns.Patterns.Command.Entities
         }
     }
 
-    enum Temperature
+    public enum Temperature
     {
         High,
         Medium,
         Low
     }
-    public class AirConditioner : IRemoteCode
+    public class AirConditioner : IDevice
     {
         public AirConditioner
         (
-            Code code
+            Code remoteCode
         )
         {
-            Contract.Requires(code != null);
+            Contract.Requires(remoteCode != null);
 
-            this.Code        = code;
+            this.RemoteCode        = remoteCode;
             this.Temperature = Temperature.Medium;
             _isTurnedOn      = false;
         }
-        public  Code         Code            { get; private set; }
+        public  Code         RemoteCode            { get; private set; }
         public  Temperature  Temperature     { get; private set; }
         private bool         _isTurnedOn     { get; set; }
 
@@ -97,26 +102,28 @@ namespace DesignPatterns.Patterns.Command.Entities
 
     public interface IRemoteCommand
     {
-        void Execute(IRemoteCode remoteControllerCode);
-        IRemoteCode RemoteControllerCode;
+        void Execute(IDevice device);
+        IDevice RemoteControllerCode { get; }
     }
     public class TurnOnTV : IRemoteCommand
     {
         public TurnOnTV
         (
-            Tv tv
+            RemoteController remoteController
         )
         {
-            this._tv = tv;
+            this.RemoteControllerCode = remoteController;
         }
-        private readonly Tv _tv;
+        public IDevice   RemoteControllerCode { get; private set; }
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._tv.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var tv = device as Tv;
+            if(tv != null && tv.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._tv.TurnOn();
+                tv.TurnOn();
             }
         }
     }
@@ -124,19 +131,21 @@ namespace DesignPatterns.Patterns.Command.Entities
     {
         public TurnOffTV
         (
-            Tv tv
+            RemoteController remoteController
         )
         {
-            this._tv = tv;
+            this.RemoteControllerCode = remoteController;
         }
-        private readonly Tv _tv;
+        public IDevice   RemoteControllerCode { get; private set; }
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._tv.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var tv = device as Tv;
+            if(tv != null && tv.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._tv.TurnOff();
+                tv.TurnOff();
             }
         }
     }
@@ -144,22 +153,24 @@ namespace DesignPatterns.Patterns.Command.Entities
     {
         public ChangeChannelTV
         (
-            Tv tv,
+            RemoteController remoteController,
             int newChannel
         )
         {
-            this._tv         = tv;
+            this.RemoteControllerCode         = remoteController;
             this._newChannel = newChannel;
         }
-        private readonly Tv  _tv;
+        public IDevice   RemoteControllerCode { get; private set; }
         private readonly int _newChannel;
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._tv.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var tv = device as Tv;
+            if(tv != null && tv.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._tv.ChangeChannel(_newChannel);
+                tv.ChangeChannel(_newChannel);
             }
         }
     }
@@ -168,19 +179,21 @@ namespace DesignPatterns.Patterns.Command.Entities
     {
         public TurnOnAirConditioner
         (
-            AirConditioner airConditioner
+            RemoteController remoteController
         )
         {
-            this._airConditioner = airConditioner;
+            this.RemoteControllerCode = remoteController;
         }
-        private readonly AirConditioner _airConditioner;
+        public IDevice   RemoteControllerCode { get; private set; }
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._airConditioner.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var airConditioner = device as AirConditioner;
+            if(airConditioner != null && airConditioner.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._airConditioner.TurnOn();
+                airConditioner.TurnOn();
             }
         }
     }
@@ -188,72 +201,94 @@ namespace DesignPatterns.Patterns.Command.Entities
     {
         public TurnOffAirConditioner
         (
-            AirConditioner airConditioner
+            RemoteController remoteController
         )
         {
-            this._airConditioner = airConditioner;
+            this.RemoteControllerCode = remoteController;
         }
-        private readonly AirConditioner _airConditioner;
+        public IDevice   RemoteControllerCode { get; private set; }
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._airConditioner.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var airConditioner = device as AirConditioner;
+            if(airConditioner != null && airConditioner.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._airConditioner.TurnOff();
+                airConditioner.TurnOff();
             }
         }
     }
-    public class TurnOffAirSetTemperature : IRemoteCommand
+    public class ChangeAirConditionerTemperature : IRemoteCommand
     {
-        public TurnOffAirSetTemperature
+        public ChangeAirConditionerTemperature
         (
-            AirConditioner airConditioner,
-            Temperature    newTemperature
+            Temperature       newTemperature,
+            RemoteController  remoteController
         )
         {
-            this._airConditioner = airConditioner;
+            _newTemperature   = newTemperature;
+            RemoteControllerCode = remoteController;
         }
-        private readonly AirConditioner _airConditioner;
-        private readonly Temperature    _newTemperature;
+        private readonly Temperature _newTemperature;
+        public IDevice  RemoteControllerCode { get; private set; }
 
-        public void Execute(IRemoteCode remoteControllerCode)
+        public void Execute(IDevice device)
         {
-            Contract.Requires(remoteControllerCode != null);
-            if(this._airConditioner.Code.Value == remoteControllerCode.Code.Value)
+            Contract.Requires(device != null);
+
+            var airConditioner = device as AirConditioner;
+            if(airConditioner != null && airConditioner.RemoteCode.Value == RemoteControllerCode.RemoteCode.Value)
             {
-                this._airConditioner.SetTemperature(_newTemperature);
+                airConditioner.SetTemperature(_newTemperature);
+                Console.WriteLine("AirConditioner temperature set to {0}", _getTemperatureName(_newTemperature));
             }
+        }
+        private string _getTemperatureName(Temperature temperature)
+        {
+            var temperatureToName = new Dictionary<Temperature, string>()
+            {
+                { Temperature.High,   "High"   },
+                { Temperature.Medium, "Medium" },
+                { Temperature.Low,    "Low"    }
+            };
+            return temperatureToName[temperature];
         }
     }
 
-    public class RemoteController : IRemoteCode
+    public class RemoteController : IDevice
     {
         public RemoteController
         (
-            Code code
+            Code remoteCode
         ) 
         {
-            this.Code      = code;
-            this._commands = new List<IRemoteCommand>();
+            this.RemoteCode  = remoteCode;
+            this._commands   = new List<IRemoteCommand>();
+            this._deviseList = new List<IDevice>();
         }
-        public  Code Code   { get; private set; }
+        public  Code RemoteCode   { get; private set; }
         
+        private readonly List<IDevice>        _deviseList;
         private readonly List<IRemoteCommand> _commands;
 
 
+        public void AddDevice(IDevice device)
+        {
+            _deviseList.Add(device);
+        }
         public void AddCommand(IRemoteCommand newCommand)
         {
             _commands.Add(newCommand);
         }
         public void PressButton(int number)
         {
-            _commands[number].Execute(this);
+            _deviseList.ForEach(_commands[number].Execute);
         }
         public void ChangeCode(Code newCode)
         {
             Contract.Requires(newCode != null);
-            this.Code = newCode;
+            this.RemoteCode = newCode;
         }
     }
 }
@@ -263,7 +298,28 @@ namespace DesignPatterns.Patterns.Command
     {
         public static void Execute()
         {
+            var masterCode = new Code("2501");
+            var remote = new RemoteController(masterCode);
+            (new List<IDevice>(){
             
+                new Tv(Code.FactoryDefault),
+                new Tv(masterCode),
+                new AirConditioner(masterCode),
+            }).ForEach(remote.AddDevice);
+
+            (new List<IRemoteCommand>(){
+                new TurnOnTV(remote),
+                new TurnOffTV(remote),
+                new ChangeChannelTV(remote, 11),
+                new TurnOnAirConditioner(remote),
+                new ChangeAirConditionerTemperature(Temperature.High, remote)
+
+            }).ForEach(remote.AddCommand);
+            
+            remote.PressButton(0);
+            remote.PressButton(1);
+            remote.PressButton(2);
+            remote.PressButton(4);
         }
     }
 }
