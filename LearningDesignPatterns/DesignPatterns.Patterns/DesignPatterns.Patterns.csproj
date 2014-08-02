@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="01_Strategy.cs" />
     <Compile Include="06_Command.cs" />
+    <Compile Include="07_Facade.cs" />
     <Compile Include="07_Adapter.cs" />
     <Compile Include="05_Singleton.cs" />
     <Compile Include="03_Decorator.cs" />
