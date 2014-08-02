@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            DesignPatterns.Patterns.Command.Executor.Execute();
+            DesignPatterns.Patterns.Adapter.Executor.Execute();
 
             System.Threading.Thread.Sleep(15000);
         }

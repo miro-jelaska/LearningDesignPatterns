@@ -283,6 +283,7 @@ namespace DesignPatterns.Patterns.Command.Entities
         }
         public void PressButton(int number)
         {
+            Contract.Requires(number >= 0);
             _deviseList.ForEach(_commands[number].Execute);
         }
         public void ChangeCode(Code newCode)
