@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DesignPatterns.Patterns.Iterator
 {
@@ -100,7 +97,6 @@ namespace DesignPatterns.Patterns.Iterator
             CurrentIteratorIndex = InitialIteratorPosition;
         }
     }
-
     class DinerMenuIterator : IIterator<MenuItem>
     {
         public DinerMenuIterator
