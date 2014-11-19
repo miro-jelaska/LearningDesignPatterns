@@ -88,6 +88,7 @@
     <Compile Include="08_TemplateMethod.cs" />
     <Compile Include="09_Iterator.cs" />
     <Compile Include="10_Composite.cs" />
+    <Compile Include="11_State.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
