@@ -8,4 +8,4 @@ Resources I found useful:
 
 Minor resources:
 * [SO: Real World Example of the Strategy Pattern](http://stackoverflow.com/questions/370258/real-world-example-of-the-strategy-pattern)
-
+* [PatternCraft - Design Patterns with examples in StarCraft](https://www.youtube.com/playlist?list=PL8B19C3040F6381A2)
