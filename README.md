@@ -5,6 +5,7 @@ Resources I found useful:
 * [Head First Design Patterns](https://www.goodreads.com/book/show/58128.Head_First_Design_Patterns)
 * http://sourcemaking.com/design_patterns
 * Game Programming Patterns : http://gameprogrammingpatterns.com
+* [dotnetcodr :: Architecture and patterns](https://dotnetcodr.com/architecture-and-patterns/)
 
 Minor resources:
 * [SO: Real World Example of the Strategy Pattern](http://stackoverflow.com/questions/370258/real-world-example-of-the-strategy-pattern)
